@@ -1,6 +1,9 @@
 #include "imgui-SFML.h"
 #include "imgui.h"
 #include "simulation.hpp"
+#include "main.hpp"
+#include "own_imgui.hpp"
+#include "world.hpp"
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -14,6 +17,11 @@
 #define VENT_UNREACHABLE() __assume(false)
 
 namespace {
+size_t getIndexFromCoordinates(const sf::Vector2i& coordinates, const size_t worldWidth)
+{
+    return (coordinates.y * worldWidth) + coordinates.x;
+}
+
 sf::Color renderCell(const Cell& cell)
 {
     switch (cell) {
@@ -65,8 +73,6 @@ void loadWorldFromFile(std::vector<Cell>& world, const std::string& fileName)
     file.read(reinterpret_cast<char*>(world.data()), sizeof(Cell) * world.size());
 }
 
-}
-
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(1200, 800), "Ventilation Simulator 2021");
@@ -81,16 +87,17 @@ int main()
     worldImage.create(static_cast<unsigned>(worldSize.x), static_cast<unsigned>(worldSize.y));
 
     bool isMouseLeftDown = false;
-    int brushSize = 20;
     sf::Vector2u mousePosition;
 
     sf::Clock worldStepClock;
     sf::Time nextWorldStep = worldStepClock.getElapsedTime();
 
-    int timeBetweenStepsInMilliseconds = 3;
-    bool isPaused = false;
+    SimulationSettings settings;
+    settings.brushSize = 20;
+    settings.timeBetweenStepsInMilliseconds = 3;
+    settings.isPaused = false;
+    settings.currentTool = Cell::Snow;
 
-    Cell currentToolIndex = Cell::Snow;
     sf::Clock deltaClock;
     while (window.isOpen()) {
         sf::Event event;
@@ -126,14 +133,14 @@ int main()
         }
 
         if (isMouseLeftDown) {
-            for (ptrdiff_t y = -brushSize; y < brushSize; ++y) {
-                for (ptrdiff_t x = -brushSize; x < brushSize; ++x) {
+            for (ptrdiff_t y = -settings.brushSize; y < settings.brushSize; ++y) {
+                for (ptrdiff_t x = -settings.brushSize; x < settings.brushSize; ++x) {
                     const std::optional<size_t> index = getIndexFromCoordinates(Point(
                                                                                     static_cast<ptrdiff_t>(mousePosition.x) + x,
                                                                                     static_cast<ptrdiff_t>(mousePosition.y) + y),
                         worldSize);
                     if (index) {
-                        world[*index] = currentToolIndex;
+                        world[*index] = settings.currentTool;
                     }
                 }
             }
@@ -150,59 +157,16 @@ int main()
                 break;
             }
 
-            if (!isPaused) {
+            if (!settings.isPaused) {
                 std::vector<Cell> newWorld = simulateStep(world.front(), worldSize);
                 world = std::move(newWorld);
             }
-            nextWorldStep += sf::milliseconds(timeBetweenStepsInMilliseconds);
+            nextWorldStep += sf::milliseconds(settings.timeBetweenStepsInMilliseconds);
         }
 
         ImGui::SFML::Update(window, deltaClock.restart());
 
-        if (ImGui::BeginMainMenuBar()) {
-            if (ImGui::BeginMenu("File")) {
-                if (ImGui::MenuItem("New", "Ctrl+N")) {
-                    clearWorld(world);
-                }
-                if (ImGui::MenuItem("Save", "Ctrl+S")) {
-                    saveWorldToFile(world, "world.dat");
-                }
-                if (ImGui::MenuItem("Load", "Ctrl+O")) {
-                    loadWorldFromFile(world, "world.dat");
-                }
-                if (ImGui::MenuItem("Quit", "Ctrl+Q")) {
-                    return 0;
-                }
-                ImGui::EndMenu();
-            }
-            ImGui::EndMainMenuBar();
-        }
-
-        ImGui::Begin("Toolbox");
-        ImGui::SliderInt("Brush Size", &brushSize, 1, 100);
-
-        const char* const items[] = { "Air", "Snow", "Wall", "Sand" };
-        const char* currentTool = items[static_cast<size_t>(currentToolIndex)];
-
-        if (ImGui::BeginCombo("Select tool", currentTool)) {
-            for (size_t i = 0; i < std::size(items); i++) {
-                bool isSelected = (currentTool == items[i]);
-                if (ImGui::Selectable(items[i], isSelected)) {
-                    currentTool = items[i];
-                    currentToolIndex = static_cast<Cell>(i);
-                }
-                if (isSelected) {
-                    ImGui::SetItemDefaultFocus();
-                }
-            }
-            ImGui::EndCombo();
-        }
-        ImGui::End();
-
-        ImGui::Begin("Speed");
-        ImGui::SliderInt("Time between steps (ms)", &timeBetweenStepsInMilliseconds, 0, 1000);
-        ImGui::Checkbox("Pause", &isPaused);
-        ImGui::End();
+        renderUI(world, settings);
 
         window.clear();
 
