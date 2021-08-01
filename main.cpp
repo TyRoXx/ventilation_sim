@@ -1,3 +1,4 @@
+#include "main.hpp"
 #include "imgui-SFML.h"
 #include "imgui.h"
 #include "simulation.hpp"
@@ -11,6 +12,7 @@
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/Event.hpp>
 #include <array>
+#include <chrono>
 #include <fstream>
 #include <iostream>
 

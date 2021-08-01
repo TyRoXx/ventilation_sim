@@ -1,8 +1,8 @@
-#include "imgui.h"
 #include "own_imgui.hpp"
-#include "world.hpp"
 #include "imgui-SFML.h"
+#include "imgui.h"
 #include "main.hpp"
+#include "world.hpp"
 #include <vector>
 
 void menuBar(std::vector<Cell>& world)
@@ -26,15 +26,17 @@ void menuBar(std::vector<Cell>& world)
     ImGui::EndMainMenuBar();
 }
 
-void toolbox(SimulationSettings& settings)
+void addBrushTreeNode(SimulationSettings& settings)
 {
-    ImGui::Begin("Toolbox");
-    ImGui::SliderInt("Brush Size", &settings.brushSize, 1, 100);
+    if (!ImGui::TreeNode("Brush Settings")) {
+        return;
+    }
+    ImGui::SliderInt("Size", &settings.brushSize, 1, 100);
 
     const char* itemLabels[] = { "Air", "Snow", "Wall" };
     const char* currentLabel = itemLabels[static_cast<size_t>(settings.currentTool)];
 
-    if (ImGui::BeginCombo("Select tool", currentLabel)) {
+    if (ImGui::BeginCombo("Material", currentLabel)) {
         for (size_t i = 0; i < 3; i++) {
             bool isSelected = itemLabels[i] == currentLabel;
             if (ImGui::Selectable(itemLabels[i], isSelected)) {
@@ -47,19 +49,25 @@ void toolbox(SimulationSettings& settings)
         }
         ImGui::EndCombo();
     }
-    ImGui::End();
+    ImGui::TreePop();
 }
 
-void simulationSettings(SimulationSettings& settings)
+void addsimulationSettingsNode(SimulationSettings& settings)
 {
-    ImGui::Begin("Speed");
+    if (!ImGui::TreeNode("Speed")) {
+        return;
+    }
     ImGui::SliderInt("Time between steps (ms)", &settings.timeBetweenStepsInMilliseconds, 0, 1000);
     ImGui::Checkbox("Pause", &settings.isPaused);
-    ImGui::End();
+    ImGui::TreePop();
 }
 
-void renderUI(std::vector<Cell>& world, SimulationSettings& settings) {
+void renderUI(std::vector<Cell>& world, SimulationSettings& settings)
+{
     menuBar(world);
-    toolbox(settings);
-    simulationSettings(settings);
+
+    ImGui::Begin("Toolbox");
+    addBrushTreeNode(settings);
+    addsimulationSettingsNode(settings);
+    ImGui::End();
 }

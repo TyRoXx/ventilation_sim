@@ -1,8 +1,8 @@
 #pragma once
 
 #include "world.hpp"
-#include <vector>
 #include <string>
+#include <vector>
 
 struct SimulationSettings {
     int timeBetweenStepsInMilliseconds;
