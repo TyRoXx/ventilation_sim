@@ -88,10 +88,6 @@ int main()
     sf::Time nextWorldStep = worldStepClock.getElapsedTime();
 
     SimulationSettings settings;
-    settings.brushSize = 20;
-    settings.timeBetweenStepsInMilliseconds = 3;
-    settings.isPaused = false;
-    settings.currentTool = Cell::Snow;
 
     sf::Clock deltaClock;
     while (window.isOpen()) {

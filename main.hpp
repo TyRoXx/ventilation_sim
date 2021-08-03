@@ -5,10 +5,10 @@
 #include "simulation.hpp"
 
 struct SimulationSettings {
-    int timeBetweenStepsInMilliseconds;
-    bool isPaused;
-    int brushSize;
-    Cell currentTool;
+    int timeBetweenStepsInMilliseconds = 3;
+    bool isPaused = false;
+    int brushSize = 20;
+    Cell currentTool = Cell::Snow;
 };
 
 void clearWorld(World& world);
