@@ -1,8 +1,9 @@
 #include "own_imgui.hpp"
 #include "imgui-SFML.h"
 #include "imgui.h"
-#include "main.hpp"
-#include "world.hpp"
+#include <array>
+
+constexpr std::array<char*, 4> itemLabels{ "Air", "Snow", "Wall", "Sand" };
 
 void menuBar(World& world)
 {
@@ -35,7 +36,7 @@ void addBrushTreeNode(SimulationSettings& settings)
     const char* currentLabel = itemLabels[static_cast<size_t>(settings.currentTool)];
 
     if (ImGui::BeginCombo("Material", currentLabel)) {
-        for (size_t i = 0; i < 3; i++) {
+        for (size_t i = 0; i < itemLabels.size(); i++) {
             bool isSelected = itemLabels[i] == currentLabel;
             if (ImGui::Selectable(itemLabels[i], isSelected)) {
                 currentLabel = itemLabels[i];

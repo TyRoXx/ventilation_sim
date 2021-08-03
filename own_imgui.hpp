@@ -1,3 +1,3 @@
 #include "main.hpp"
 
-void renderUI(std::vector<Cell>& world, SimulationSettings& settings);
+void renderUI(World& world, SimulationSettings& settings);

@@ -1,9 +1,9 @@
 #include "main.hpp"
 #include "imgui-SFML.h"
 #include "imgui.h"
-#include "simulation.hpp"
 #include "main.hpp"
 #include "own_imgui.hpp"
+#include "simulation.hpp"
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>

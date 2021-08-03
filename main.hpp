@@ -12,5 +12,5 @@ struct SimulationSettings {
 };
 
 void clearWorld(World& world);
-void saveWorldToFile(World& world, const std::string& fileName);
+void saveWorldToFile(const World& world, const std::string& fileName);
 void loadWorldFromFile(World& world, const std::string& fileName);
