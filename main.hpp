@@ -1,8 +1,8 @@
 #pragma once
 
-#include "world.hpp"
 #include <string>
 #include <vector>
+#include "simulation.hpp"
 
 struct SimulationSettings {
     int timeBetweenStepsInMilliseconds;
@@ -11,6 +11,6 @@ struct SimulationSettings {
     Cell currentTool;
 };
 
-void clearWorld(std::vector<Cell>& world);
-void saveWorldToFile(const std::vector<Cell>& world, const std::string& fileName);
-void loadWorldFromFile(std::vector<Cell>& world, const std::string& fileName);
+void clearWorld(World& world);
+void saveWorldToFile(World& world, const std::string& fileName);
+void loadWorldFromFile(World& world, const std::string& fileName);

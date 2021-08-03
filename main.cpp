@@ -4,7 +4,6 @@
 #include "simulation.hpp"
 #include "main.hpp"
 #include "own_imgui.hpp"
-#include "world.hpp"
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -17,12 +16,6 @@
 #include <iostream>
 
 #define VENT_UNREACHABLE() __assume(false)
-
-namespace {
-size_t getIndexFromCoordinates(const sf::Vector2i& coordinates, const size_t worldWidth)
-{
-    return (coordinates.y * worldWidth) + coordinates.x;
-}
 
 sf::Color renderCell(const Cell& cell)
 {
@@ -58,18 +51,18 @@ void renderWorld(sf::Image& into, const Cell& front, const Point& worldSize)
     }
 }
 
-void clearWorld(std::vector<Cell>& world)
+void clearWorld(World& world)
 {
     std::fill(world.begin(), world.end(), Cell::Air);
 }
 
-void saveWorldToFile(const std::vector<Cell>& world, const std::string& fileName)
+void saveWorldToFile(const World& world, const std::string& fileName)
 {
     std::ofstream file(fileName, std::ofstream::binary);
     file.write(reinterpret_cast<const char*>(world.data()), sizeof(Cell) * world.size());
 }
 
-void loadWorldFromFile(std::vector<Cell>& world, const std::string& fileName)
+void loadWorldFromFile(World& world, const std::string& fileName)
 {
     std::ifstream file(fileName, std::ifstream::binary);
     file.read(reinterpret_cast<char*>(world.data()), sizeof(Cell) * world.size());
@@ -83,7 +76,7 @@ int main()
 
     const Point worldSize(window.getSize().x, window.getSize().y);
 
-    std::vector<Cell> world(worldSize.x * worldSize.y);
+    World world(worldSize.x * worldSize.y);
 
     sf::Image worldImage;
     worldImage.create(static_cast<unsigned>(worldSize.x), static_cast<unsigned>(worldSize.y));
@@ -160,7 +153,7 @@ int main()
             }
 
             if (!settings.isPaused) {
-                std::vector<Cell> newWorld = simulateStep(world.front(), worldSize);
+                World newWorld = simulateStep(world.front(), worldSize);
                 world = std::move(newWorld);
             }
             nextWorldStep += sf::milliseconds(settings.timeBetweenStepsInMilliseconds);

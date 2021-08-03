@@ -3,9 +3,8 @@
 #include "imgui.h"
 #include "main.hpp"
 #include "world.hpp"
-#include <vector>
 
-void menuBar(std::vector<Cell>& world)
+void menuBar(World& world)
 {
     if (!ImGui::BeginMainMenuBar()) {
         return;
@@ -33,7 +32,6 @@ void addBrushTreeNode(SimulationSettings& settings)
     }
     ImGui::SliderInt("Size", &settings.brushSize, 1, 100);
 
-    const char* itemLabels[] = { "Air", "Snow", "Wall" };
     const char* currentLabel = itemLabels[static_cast<size_t>(settings.currentTool)];
 
     if (ImGui::BeginCombo("Material", currentLabel)) {
@@ -52,7 +50,7 @@ void addBrushTreeNode(SimulationSettings& settings)
     ImGui::TreePop();
 }
 
-void addsimulationSettingsNode(SimulationSettings& settings)
+void addSimulationSettingsNode(SimulationSettings& settings)
 {
     if (!ImGui::TreeNode("Speed")) {
         return;
@@ -62,12 +60,12 @@ void addsimulationSettingsNode(SimulationSettings& settings)
     ImGui::TreePop();
 }
 
-void renderUI(std::vector<Cell>& world, SimulationSettings& settings)
+void renderUI(World& world, SimulationSettings& settings)
 {
     menuBar(world);
 
     ImGui::Begin("Toolbox");
     addBrushTreeNode(settings);
-    addsimulationSettingsNode(settings);
+    addSimulationSettingsNode(settings);
     ImGui::End();
 }
