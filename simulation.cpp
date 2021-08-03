@@ -23,7 +23,8 @@ std::vector<Cell> simulateStep(const Cell& front, const sf::Vector2u& worldSize)
             case Cell::Air:
                 continue;
 
-            case Cell::Snow: {
+            case Cell::Snow:
+            case Cell::Water: {
                 if (y == (worldHeight - 1)) {
                     newWorld[cellIndex] = cell;
                     continue;
