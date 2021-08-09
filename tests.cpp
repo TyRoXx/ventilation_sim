@@ -284,4 +284,6 @@ TEST_CASE("getIndexFromCoordinates out of bounds")
 
     REQUIRE(!getIndexFromCoordinates(Point(0, -1), Point(1, 1)));
     REQUIRE(!getIndexFromCoordinates(Point(0, 1), Point(1, 1)));
+
+    REQUIRE(false);
 }
